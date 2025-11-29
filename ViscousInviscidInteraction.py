@@ -84,7 +84,7 @@ def calculate_shape_factor_H(lam):
     
     mask_adv = lam < 0
     l_adv = lam[mask_adv]
-    l_adv = np.maximum(l_adv, -0.139) 
+    l_adv = np.maximum(l_adv, -0.1) 
     H[mask_adv] = 2.106 + 0.068 / (0.137 + l_adv)
     
     return H
