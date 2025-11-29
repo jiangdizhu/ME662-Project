@@ -262,10 +262,31 @@ plt.grid(True)
 plt.xlim(-1.0, 2.0)
 
 plt.subplot(4, 1, 2)
+
+
+
+
+
+print(f"Flow Separation Predicted at x = {sep[0]:.4f} cm")
+
+    
+
+
 wall_panels = [p for p in panels if p.yc < 0]
 wall_panels.sort(key=lambda p: p.xc)
 xc_wall = [p.xc for p in wall_panels]
 cp_wall = [p.Cp for p in wall_panels]
+
+
+
+sep_x = sep[0]
+idx_nearest = (np.abs(np.array(xc_wall) - sep_x)).argmin()
+cp_at_sep = cp_wall[idx_nearest]
+
+plt.plot(sep_x, cp_at_sep, 'ro', label='Separation Point', zorder=10)
+plt.axvline(x=sep_x, color='r', linestyle='--', alpha=0.5)
+plt.text(sep_x + 0.1, cp_at_sep, 'Separation', color='red')
+plt.legend()
 
 plt.plot(xc_wall, cp_wall, 'b-', linewidth=2, label='Panel Method Cp')
 plt.gca().invert_yaxis() 
@@ -315,6 +336,8 @@ plt.colorbar(cp_plot, label='$C_p$')
 plt.axis([x_min, x_max, y_min, y_max])
 plt.xlabel("Axial Distance x (cm)")
 plt.ylabel("Y (cm)")
+
+
 
 plt.tight_layout()
 plt.xlim(-1.0, 2.0)
