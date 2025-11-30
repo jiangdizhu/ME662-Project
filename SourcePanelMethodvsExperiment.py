@@ -68,14 +68,14 @@ def build_scherer_geometry_tuned():
     
     R = 0.15
     g = 0.04
-    L_inlet = 0.5
+    L_inlet = 1.0
     L_outlet = 1.0
     theta = np.radians(10)
     
     x_points = []
     y_points = []
     
-    dx_in = L_inlet / 20
+    dx_in = L_inlet / 50
     for x in np.arange(-L_inlet, -R, dx_in):
         x_points.append(x)
         y_points.append(-(g/2 + R))
@@ -87,10 +87,16 @@ def build_scherer_geometry_tuned():
         x_points.append(xc)
         y_points.append(yc)
         
-    n_div = 60
+    n_div = 50
     for x in np.linspace(0, L_outlet, n_div)[1:]:
         x_points.append(x)
         y_points.append(-(g/2 + x * np.tan(theta)))
+
+
+    x_points = [-x for x in x_points]
+    zipped_points = sorted(zip(x_points, y_points))
+    x_points = [p[0] for p in zipped_points]
+    y_points = [p[1] for p in zipped_points]
         
     for k in range(len(x_points)-1):
         panels.append(Panel(x_points[k], y_points[k], x_points[k+1], y_points[k+1]))
@@ -112,7 +118,7 @@ x_model = np.array([p.xc for p in wall_panels])
 Cp_model = np.array([p.Cp for p in wall_panels])
 min_Cp_model = np.min(Cp_model)
 
-exp_entrance_x = 0.21
+exp_entrance_x = 0.06
 exp_axial_dist_cm = np.array([0.0, 0.1, 0.21, 0.25, 0.29, 0.33, 0.37, 0.41, 0.46, 0.51, 0.54])
 
 exp_data = {
@@ -137,9 +143,6 @@ for case_name, info in exp_data.items():
     model_pressure_drop = -Cp_model * k_scale
     
     ax.plot(x_model_aligned, model_pressure_drop, '--', color=color, linewidth=2, label=f'Panel Method ({case_name})')
-
-ax.axvline(exp_entrance_x, color='gray', linestyle=':', label='Glottal Entrance')
-ax.axvline(exp_entrance_x + 0.3, color='k', linestyle=':', label='Glottal Exit')
 
 ax.set_title('Source Panel Method vs. Experimental Data (10-deg Divergence)', fontsize=16)
 ax.set_xlabel('Axial Distance (cm)', fontsize=12)

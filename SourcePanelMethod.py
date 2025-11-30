@@ -136,22 +136,22 @@ class SourcePanelMethod:
 def build_scherer_geometry(divergence_angle_deg=10, n_panels_per_wall=100):
     panels = []
     
-    R = 0.5 
-    g = 0.1           
-    L_inlet = 1.0     
-    L_outlet = 2.0    
+    R = 0.15
+    g = 0.04           
+    L_inlet = 1.0    
+    L_outlet = 1.0   
     
     theta = np.radians(divergence_angle_deg) 
     
     x_points = []
     y_points = []
     
-    dx = L_inlet / 20
+    dx = L_inlet / 50
     for x in np.arange(-L_inlet, -R, dx):
         x_points.append(x)
         y_points.append(-(g/2 + R))
         
-    n_curve = 40
+    n_curve = 50
     for alpha in np.linspace(np.pi, np.pi/2, n_curve):
         xc = R * np.cos(alpha)
         yc = -(g/2 + R) + R * np.sin(alpha)
@@ -159,11 +159,17 @@ def build_scherer_geometry(divergence_angle_deg=10, n_panels_per_wall=100):
         y_points.append(yc)
         
 
-    n_div = 60
+    n_div = 50
     for x in np.linspace(0, L_outlet, n_div)[1:]:
         x_points.append(x)
         y_points.append(-(g/2 + x * np.tan(theta)))
-        
+
+
+    x_points = [-x for x in x_points]
+    zipped_points = sorted(zip(x_points, y_points))
+    x_points = [p[0] for p in zipped_points]
+    y_points = [p[1] for p in zipped_points]
+    
     for k in range(len(x_points)-1):
         panels.append(Panel(x_points[k], y_points[k], x_points[k+1], y_points[k+1]))
 
@@ -259,7 +265,7 @@ for p in panels:
     plt.plot([p.x0, p.x1], [p.y0, p.y1], 'k-', linewidth=1)
 plt.ylabel("Y (cm)")
 plt.grid(True)
-plt.xlim(-1.0, 2.0)
+plt.xlim(-1.0, 1.0)
 
 plt.subplot(4, 1, 2)
 
@@ -277,6 +283,7 @@ wall_panels.sort(key=lambda p: p.xc)
 xc_wall = [p.xc for p in wall_panels]
 cp_wall = [p.Cp for p in wall_panels]
 
+V_inlet = abs(wall_panels[0].Vt)
 
 
 sep_x = sep[0]
@@ -292,12 +299,12 @@ plt.plot(xc_wall, cp_wall, 'b-', linewidth=2, label='Panel Method Cp')
 plt.gca().invert_yaxis() 
 plt.ylabel("Cp")
 plt.title("Wall Pressure Coefficient")
-plt.xlim(-1.0, 2.0)
+plt.xlim(-1.0, 1.0)
 plt.grid(True)
 plt.legend()
 
 
-x_min, x_max = -1.0, 2.0
+x_min, x_max = -1.0, 1.0
 y_min, y_max = -0.8, 0.8
 Nx, Ny = 80, 50
 xg = np.linspace(x_min, x_max, Nx)
@@ -323,7 +330,7 @@ strm = plt.streamplot(X, Y, u_field, v_field, color=speed, cmap='plasma', densit
 plt.colorbar(strm.lines, label='Velocity Magnitude')
 plt.axis([x_min, x_max, y_min, y_max])
 plt.ylabel("Y (cm)")
-plt.xlim(-1.0, 2.0)
+plt.xlim(-1.0, 1.0)
 
 plt.subplot(4, 1, 4)
 plt.title("Pressure Coefficient Contours")
@@ -340,5 +347,5 @@ plt.ylabel("Y (cm)")
 
 
 plt.tight_layout()
-plt.xlim(-1.0, 2.0)
+plt.xlim(-1.0, 1.0)
 plt.show()
