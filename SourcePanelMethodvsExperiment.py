@@ -153,5 +153,6 @@ ax.grid(True)
 handles, labels = ax.get_legend_handles_labels()
 ax.legend(handles[::2] + handles[1::2], labels[::2] + labels[1::2], fontsize=10, ncol=2)
 
+plt.xlim(0, 0.4)
 plt.tight_layout()
-plt.show()
+plt.savefig('PanelMethod_vs_Experiment.png', dpi=300)

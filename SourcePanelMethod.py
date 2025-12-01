@@ -258,16 +258,16 @@ x_bl, s_bl, U_bl, lam_bl, sep = thwaites_separation(panels, nu_air)
 plt.figure(figsize=(12, 16))
 
 
-plt.subplot(4, 1, 1)
+plt.subplot(2, 1, 1)
 plt.title("Panel Method Geometry (10-deg Divergence)")
 
 for p in panels:
     plt.plot([p.x0, p.x1], [p.y0, p.y1], 'k-', linewidth=1)
 plt.ylabel("Y (cm)")
 plt.grid(True)
-plt.xlim(-1.0, 1.0)
+plt.xlim(-0.25, 0.25)
 
-plt.subplot(4, 1, 2)
+plt.subplot(2, 1, 2)
 
 
 
@@ -299,53 +299,7 @@ plt.plot(xc_wall, cp_wall, 'b-', linewidth=2, label='Panel Method Cp')
 plt.gca().invert_yaxis() 
 plt.ylabel("Cp")
 plt.title("Wall Pressure Coefficient")
-plt.xlim(-1.0, 1.0)
+plt.xlim(-0.25, 0.25)
 plt.grid(True)
 plt.legend()
-
-
-x_min, x_max = -1.0, 1.0
-y_min, y_max = -0.8, 0.8
-Nx, Ny = 80, 50
-xg = np.linspace(x_min, x_max, Nx)
-yg = np.linspace(y_min, y_max, Ny)
-X, Y = np.meshgrid(xg, yg)
-
-u_field, v_field = solver.calculate_flow_field(X, Y)
-V_mag = np.sqrt(u_field**2 + v_field**2)
-Cp_field = 1.0 - (V_mag / U_inf)**2
-
-mask = mask_grid(X, Y, panels)
-u_field = np.ma.array(u_field, mask=mask)
-v_field = np.ma.array(v_field, mask=mask)
-Cp_field = np.ma.array(Cp_field, mask=mask)
-
-plt.subplot(4, 1, 3)
-plt.title("Velocity Streamlines")
-for p in panels:
-    plt.plot([p.x0, p.x1], [p.y0, p.y1], 'k-', linewidth=1)
-    
-speed = np.sqrt(u_field**2 + v_field**2)
-strm = plt.streamplot(X, Y, u_field, v_field, color=speed, cmap='plasma', density=1.5, linewidth=1)
-plt.colorbar(strm.lines, label='Velocity Magnitude')
-plt.axis([x_min, x_max, y_min, y_max])
-plt.ylabel("Y (cm)")
-plt.xlim(-1.0, 1.0)
-
-plt.subplot(4, 1, 4)
-plt.title("Pressure Coefficient Contours")
-for p in panels:
-    plt.plot([p.x0, p.x1], [p.y0, p.y1], 'k-', linewidth=1)
-    
-levels = np.linspace(np.min(Cp_field), np.max(Cp_field), 30)
-cp_plot = plt.contourf(X, Y, Cp_field, levels=levels, cmap='RdBu_r', extend='both')
-plt.colorbar(cp_plot, label='$C_p$')
-plt.axis([x_min, x_max, y_min, y_max])
-plt.xlabel("Axial Distance x (cm)")
-plt.ylabel("Y (cm)")
-
-
-
-plt.tight_layout()
-plt.xlim(-1.0, 1.0)
 plt.show()
